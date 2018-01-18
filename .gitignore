@@ -1,0 +1,5 @@
+node_modules
+.env
+.idea
+npm-debug.log
+Google Vision-417ed78461ab.json
