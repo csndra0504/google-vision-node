@@ -1,0 +1,23 @@
+html
+    head
+        title= title
+        link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css', integrity='sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy', crossorigin='anonymous')
+    body
+        nav.navbar.navbar-expand-lg.navbar-light.bg-light
+            a.navbar-brand(href='#') Google Vision Demo
+        .container
+            .row
+                .col-md-12(style='padding:20px;')
+                    .jumbotron
+                        h1.display-4 Upload an Image
+                        hr.my-4
+                        .card
+                            .card-body
+                                .row
+                                    .col-md-6
+                                        form(action='fileupload', method='POST', enctype='multipart/form-data')
+                                            .form-group
+                                                label(for='photo') Photo
+                                                input(type="file" name="photo" id="photo" accept="image/gif, image/png, image/jpeg")
+                                            button.btn.btn-primary(type='submit') Submit
+                                    .col-md-6

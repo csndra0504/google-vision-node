@@ -1,25 +1,60 @@
 // const express = require('express');
-const formidable = require('formidable');
 const vision = require('@google-cloud/vision');
-const path = require('path');
 const fs = require('fs');
+const multer = require('multer');
+const jimp = require('jimp');
+const uuid = require('uuid');
+
+const multerOptions = {
+  storage: multer.memoryStorage(),
+  fileFilter: (req, file, next) => {
+    console.log('filter');
+    const isPhoto = file.mimetype.startsWith('image/');
+    if (isPhoto){
+      next(null, true);
+    } else{
+      next({message: 'That file type isn\'t allowed'});
+    }
+  }
+};
+
 
 // Creates a client
 const client = new vision.ImageAnnotatorClient();
 
-exports.upload = (req, res) => {
-  const form = new formidable.IncomingForm();
-  form.parse(req, function (err, fields, files) {
-    saveFile(files.filetoupload);
-  });
+// exports.upload = ()=>{
+//   console.log(uploading);
+// }
 
-  // } else {
-  //   fs.unlink(tempPath, function () {
-  //     if (err) throw err;
-  //     console.error("Only .png files are allowed!");
-  //   });
-  // }
+exports.upload = multer(multerOptions).single('photo');
+
+exports.save = async (req, res, next) => {
+  console.log('saving');
+  if(!req.file){
+    next();
+    return;
+  }
+  const extension = req.file.mimetype.split('/')[1];
+  req.body.photo = `${uuid.v4()}.${extension}`;
+  const photo = await jimp.read(req.file.buffer);
+  await photo.resize(1000, jimp.AUTO);
+  await photo.write(`./public/uploads/${req.body.photo}`);
+  res.redirect(`/getImageData/${req.body.photo}`);
 };
+
+// exports.upload = (req, res) => {
+//   const form = new formidable.IncomingForm();
+//   form.parse(req, function (err, fields, files) {
+//     saveFile(files.filetoupload);
+//   });
+//
+//   // } else {
+//   //   fs.unlink(tempPath, function () {
+//   //     if (err) throw err;
+//   //     console.error("Only .png files are allowed!");
+//   //   });
+//   // }
+// };
 
 function saveFile(file){
   // const oldpath = files.filetoupload.path;
